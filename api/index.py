@@ -1,7 +1,10 @@
 import vercel_ai
 from flask import Flask,request,jsonify
+from flask_cors import CORS
 
 app=Flask(__name__)
+CORS(app)
+
 client = vercel_ai.Client()
 
 
@@ -10,13 +13,13 @@ def chat():
     if request.method == "POST":
 
         data=request.json
-        print(data)
+
         response = ""
 
-        for chunk in client.chat("openai:gpt-3.5-turbo", data["messages"], params=data["params"]):
+        for chunk in client.chat(data["modelname"], data["messages"], params=data["params"]):
 
             response=response+chunk
-            print(response)
+
 
         return jsonify(response)
 
@@ -25,13 +28,13 @@ def generate():
     if request.method == "POST":
 
         data=request.json
-        print(data)
+
         response = ""
 
-        for chunk in client.generate("openai:gpt-3.5-turbo", data["prompt"], params=data["params"]):
+        for chunk in client.generate(data["modelname"], data["prompt"], params=data["params"]):
 
             response=response+chunk
-            print(response)
+
 
         return jsonify(response)
 
@@ -44,3 +47,6 @@ def models():
 def home():
     return 'Hello, World!'
 
+
+if __name__ == '__main__':
+   app.run(debug=True)
